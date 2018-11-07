@@ -21,11 +21,12 @@ todo
 <br />
 1. aicheng_asia_mosaicked
 2. aicheng_asia_non_mosaicked
-
 3. chaoliu_asia_mosaicked
 4. chaoliu_asia_non_mosaicked
 <br />
 4个class
+<br />
+可以一次定义多个class，默认会按照顺序自行下载。
 <br />
 其他设置请参考config.yaml自行修改。
 <br />
