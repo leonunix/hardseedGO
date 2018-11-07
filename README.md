@@ -13,18 +13,20 @@ https://github.com/yangyangwithgnu/hardseed/
 todo
 <br />
 1. ~~草榴支持~~
-2. 1024支持
+2. ~~1024支持~~
 3. 不重复下载种子和图片
 4. 自动提交种子到下载器
 <br />
 目前支持
 <br />
-1. aicheng_asia_mosaicked
-2. aicheng_asia_non_mosaicked
-3. chaoliu_asia_mosaicked
-4. chaoliu_asia_non_mosaicked
+- aicheng_asia_mosaicked
+- aicheng_asia_non_mosaicked
+- chaoliu_asia_mosaicked
+- chaoliu_asia_non_mosaicked
+- xp_asia_mosaicked
+- xp_asia_non_mosaicked
 <br />
-4个class
+6个class
 <br />
 可以一次定义多个class，默认会按照顺序自行下载。
 <br />

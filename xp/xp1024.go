@@ -1,4 +1,4 @@
-package chaoliu
+package xp
 
 import (
 	"log"
@@ -33,7 +33,7 @@ func Do(avClass string) {
 	var topicList []utils.Topic
 	// 计算要请求多少页面
 	page, _ := strconv.Atoi(C.TopicRange)
-	pageCount := page / 60
+	pageCount := page / 50
 	if pageCount == 0 {
 		pageCount++
 	}
@@ -45,17 +45,14 @@ func Do(avClass string) {
 	//get index page
 
 	for i := 0; i < pageCount; i++ {
-		url := getTopicsListUrl(avClass) + "&page=" + strconv.Itoa(i+1)
+		url := getTopicsListUrl(avClass) + "-page-" + strconv.Itoa(i+1) + ".html"
 		log.Println(url)
 		body, err := utils.Get(httpclient, url)
 		if err != nil {
 			log.Panic(err)
 		}
-		utfBody, err := utils.GbkToUtf8(body)
-		if err != nil {
-			log.Panic(err)
-		}
-		tmpTopicList := getTopic(utfBody)
+
+		tmpTopicList := getTopic(body)
 		for _, value := range tmpTopicList {
 			topicList = append(topicList, value)
 		}
@@ -67,7 +64,9 @@ func Do(avClass string) {
 
 	}
 	log.Printf("一共得到title : %d", len(topicList))
-
+	for _, value := range topicList {
+		log.Printf("topic: %s - %s\n", value.Title, C.Url+value.Url)
+	}
 	//过滤喜欢
 	topicList = utils.LikeFilter(topicList, C.LikeKeyWord)
 	log.Printf("过滤喜好主题后主题数 : %d", len(topicList))
@@ -108,12 +107,12 @@ func Do(avClass string) {
 
 func getTopicsListUrl(avClass string) string {
 	switch avClass {
-	case "chaoliu_asia_mosaiched":
-		return C.Url + "thread0806.php?fid=15"
-	case "chaoliu_asia_non_mosaiched":
-		return C.Url + "thread0806.php?fid=2"
+	case "xp_asia_mosaiched":
+		return C.Url + "thread-htm-fid-22"
+	case "xp_asia_non_mosaiched":
+		return C.Url + "thread-htm-fid-5"
 	default:
-		return C.Url + "thread0806.php?fid=15"
+		return C.Url + "thread-htm-fid-22"
 	}
 }
 
@@ -123,9 +122,9 @@ func getTopic(body []byte) []utils.Topic {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	dom.Find("a[target=_blank][id]").Each(func(i int, s *goquery.Selection) {
+	dom.Find("h3").Each(func(i int, s *goquery.Selection) {
 		title := s.Text()
-		url, _ := s.Attr("href")
+		url, _ := s.Find("a").Attr("href")
 		tmpTopic := utils.Topic{
 			Title: utils.TitleFilter(title),
 			Url:   url,
@@ -144,12 +143,12 @@ func getImageAndTorrent(body []byte, title string) error {
 	}
 	isFirst := true
 
-	dom.Find(".tpc_content.do_not_catch").Each(func(i int, s *goquery.Selection) {
+	dom.Find("div[class=f14][id=read_tpc]").Each(func(i int, s *goquery.Selection) {
 
 		if isFirst {
 			isFirst = false
 			s.Find("img").Each(func(i1 int, s1 *goquery.Selection) {
-				imageUrl, _ := s1.Attr("data-src")
+				imageUrl, _ := s1.Attr("src")
 				if strings.HasSuffix(imageUrl, ".gif") {
 					return
 				}
@@ -159,29 +158,18 @@ func getImageAndTorrent(body []byte, title string) error {
 			})
 			//得到种子地址
 			var torrent string
-			s.Find("a[target=_blank][onmouseover][href]").Each(func(i int, s1 *goquery.Selection) {
+			s.Find("a[target=_blank]").Each(func(i int, s1 *goquery.Selection) {
 
 				tmpUrl := s1.Text()
-				if strings.Contains(tmpUrl, "rmdown.com") || strings.Contains(tmpUrl, "jandown") {
+				if strings.Contains(tmpUrl, "downsx") {
 					torrent = tmpUrl
 				}
 			})
-
 			log.Printf("获取种子地址： %s", torrent)
-
 			savePath := C.SavePath + "/" + title + ".torrent"
-			if strings.Contains(torrent, "rmdown") {
-				err = utils.GetRmdownTorrent(httpclient, torrent, savePath)
-				if err != nil {
-					log.Print(err)
-				}
-			} else if strings.Contains(torrent, "jandown") {
-				err = utils.GetJandownTorrent(httpclient, torrent, savePath)
-				if err != nil {
-					log.Print(err)
-				}
-			} else {
-				log.Print("不能解析torrent下载方式，请联系开发人员")
+			err = utils.GetDownsxTorrent(httpclient, torrent, savePath)
+			if err != nil {
+				log.Print(err)
 			}
 
 		}

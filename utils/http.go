@@ -290,6 +290,82 @@ func GetRmdownTorrent(httpClient *http.Client, url string, fileUrl string) error
 	file.Close()
 	return nil
 }
+
+//downsx.rocks
+func GetDownsxTorrent(httpClient *http.Client, url string, fileUrl string) error {
+	indexPage, err := Get(httpClient, url)
+	dom, err := goquery.NewDocumentFromReader(strings.NewReader(string(indexPage)))
+	if err != nil {
+		return err
+	}
+	dom.Find(".uk-button").Each(func(i int, s *goquery.Selection) {
+		tmpText := s.Text()
+		if tmpText == "下載檔案" {
+			downloadUrl, _ := s.Attr("href")
+			if strings.Contains(url, "rocks") {
+				downloadUrl = "http://www1.downsx.rocks" + downloadUrl
+			} else if strings.Contains(url, "com") {
+				downloadUrl = "http://www1.downsx.com" + downloadUrl
+			} else if strings.Contains(url, "club") {
+				downloadUrl = "http://www1.downsx.club" + downloadUrl
+			}
+
+			log.Printf("获取种子下载真是地址: %s", downloadUrl)
+			reqest, err := http.NewRequest("POST", downloadUrl, nil)
+			if err != nil {
+				log.Print(err)
+			}
+			reqest.Header.Set("Accept-Language", "zh-CN,zh;q=0.8")
+			reqest.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36")
+			reqest.Header.Set("Connection", "keep-alive")
+			reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			reqest.Header.Set("Cache-Control", "no-cache")
+			if strings.Contains(url, "rocks") {
+				reqest.Header.Set("Host", "www1.downsx.rocks")
+			} else if strings.Contains(url, "com") {
+				reqest.Header.Set("Host", "www1.downsx.com")
+			} else if strings.Contains(url, "club") {
+				reqest.Header.Set("Host", "www1.downsx.club")
+			}
+
+			reqest.Header.Set("Referer", url)
+			reqest.Header.Set("Upgrade-Insecure-Requests", "1")
+			response, err := httpClient.Do(reqest)
+			defer response.Body.Close()
+			if err != nil {
+				log.Print(err.Error())
+			}
+			if response.StatusCode != 200 {
+				log.Printf("种子下载失败，状态代码: %d ，种子地址: %s", response.StatusCode, url)
+				log.Print(err.Error())
+			}
+
+			var reader io.ReadCloser
+			if response.Header.Get("Content-Encoding") == "gzip" {
+				reader, err = gzip.NewReader(response.Body)
+				if err != nil {
+					log.Print(err.Error())
+				}
+			} else {
+				reader = response.Body
+			}
+			//open a file for writing
+			file, err := os.Create(fileUrl)
+			if err != nil {
+				log.Print(err.Error())
+			}
+			// Use io.Copy to just dump the response body to the file. This supports huge files
+			_, err = io.Copy(file, reader)
+			if err != nil {
+				log.Print(err.Error())
+			}
+			file.Close()
+		}
+
+	})
+	return nil
+}
+
 func GbkToUtf8(s []byte) ([]byte, error) {
 	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
 	d, e := ioutil.ReadAll(reader)

@@ -54,6 +54,7 @@ func TitleFilter(title string) string {
 	filter.AddWord("|")
 	filter.AddWord(" ")
 	filter.AddWord("→")
+	filter.AddWord("	")
 	ret := filter.Replace(title, 48)
 	return ret
 

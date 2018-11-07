@@ -1,8 +1,10 @@
 ---
 aisex_addr: "http://www.aisex.com/bt/"
 chaoliu_addr: "https://www.t66y.com/"
+xp_addr : "http://h3.cnmbtgf.rocks/pw/"
 av_class:
-  - chaoliu_asia_mosaiched
+  - xp_asia_mosaiched
+  - xp_asia_non_mosaiched
 timeout: 60
 topic_range: 128
 save_path: "download"
@@ -30,4 +32,5 @@ like_keywords:
   - tights
   - 美腿
   - 美脚
+  - 破处
 proxy_addr: ""
