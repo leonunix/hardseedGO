@@ -158,9 +158,18 @@ func getImageAndTorrent(body []byte, title string) error {
 			log.Printf("获取种子地址： %s", torrent)
 			savePath := C.SavePath + "/" + title + ".torrent"
 
-			err = utils.GetJandownTorrent(httpclient, torrent, savePath)
-			if err != nil {
-				log.Print(err)
+			if strings.Contains(torrent, "rmdown") {
+				err = utils.GetRmdownTorrent(httpclient, torrent, savePath)
+				if err != nil {
+					log.Print(err)
+				}
+			} else if strings.Contains(torrent, "jandown") {
+				err = utils.GetJandownTorrent(httpclient, torrent, savePath)
+				if err != nil {
+					log.Print(err)
+				}
+			} else {
+				log.Print("不能解析torrent下载方式，请联系开发人员")
 			}
 
 		}
