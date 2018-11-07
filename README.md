@@ -8,21 +8,24 @@ https://github.com/yangyangwithgnu/hardseed/
 目前还在开发中，暂时没有提供各种版本的支持。
 在开发接近尾声的时候，会发布所有系统的支持包。
 因为GOlang的特性，很容易实现跨平台的支持。所以各位放心。
-
+<br />
 
 todo
-~~1. 草榴支持~~
+<br />
+1. ~~草榴支持~~
 2. 1024支持
 3. 不重复下载种子和图片
 4. 自动提交种子到下载器
-
+<br />
 目前支持
-aicheng_asia_mosaicked
-aicheng_asia_non_mosaicked
+<br />
+1. aicheng_asia_mosaicked
+2. aicheng_asia_non_mosaicked
 
-chaoliu_asia_mosaicked
-chaoliu_asia_non_mosaicked
-
+3. chaoliu_asia_mosaicked
+4. chaoliu_asia_non_mosaicked
+<br />
 4个class
-
+<br />
 其他设置请参考config.yaml自行修改。
+<br />
