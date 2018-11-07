@@ -19,12 +19,14 @@ todo
 <br />
 目前支持
 <br />
+
 - aicheng_asia_mosaicked
 - aicheng_asia_non_mosaicked
 - chaoliu_asia_mosaicked
 - chaoliu_asia_non_mosaicked
 - xp_asia_mosaicked
 - xp_asia_non_mosaicked
+
 <br />
 6个class
 <br />
