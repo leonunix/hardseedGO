@@ -9,6 +9,12 @@
 			"revisionTime": "2018-10-14T17:58:06Z"
 		},
 		{
+			"checksumSHA1": "20Pind5XCrfZL/F0oibWfd9gotA=",
+			"path": "github.com/boltdb/bolt",
+			"revision": "fd01fc79c553a8e99d512a07e8e0c63d4a3ccfc5",
+			"revisionTime": "2018-03-02T18:00:52Z"
+		},
+		{
 			"checksumSHA1": "h0h2FzHRdY8EekGcoW3Fg1y3QVo=",
 			"path": "github.com/importcjj/sensitive",
 			"revision": "facc818f1e6e72c70eee38369e0002fe34e5cda2",

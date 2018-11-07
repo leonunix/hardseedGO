@@ -84,22 +84,35 @@ func Do(avClass string) {
 	//处理过滤后的主题，开始请求图片和种子
 	for _, value := range topicList {
 		//todo 增加本地状态查询
+		//查询数据库这里使用title md5作为key来索引
+		record, err := utils.DBGet(utils.GetMD5(value.Title))
+		if err != nil {
+			log.Print(err)
+		}
+		if record == nil {
+			//请求详情页面
+			topicBody, err := utils.Get(httpclient, C.Url+value.Url)
+			if err != nil {
+				log.Panic(err)
+			}
 
-		//请求详情页面
-		topicBody, err := utils.Get(httpclient, C.Url+value.Url)
-		if err != nil {
-			log.Panic(err)
-		}
-		utfBody, err := utils.GbkToUtf8(topicBody)
-		if err != nil {
-			log.Panic(err)
-		}
+			err = getImageAndTorrent(topicBody, value.Title)
+			if err != nil {
+				log.Panic(err)
+			}
 
-		err = getImageAndTorrent(utfBody, value.Title)
-		if err != nil {
-			log.Panic(err)
+			record = new(utils.DBArch)
+			record.Title = value.Title
+			record.IsSubmitDownload = false
+			record.Url = value.Url
+			record.CreateTime = time.Now().Nanosecond()
+			record.UpdateTime = time.Now().Nanosecond()
+			_ = utils.DBUpdate(record, utils.GetMD5(value.Title))
+
+			time.Sleep(time.Duration(1) * time.Second)
+		} else {
+			log.Printf("title 已经存在，不再下载 %s", value.Title)
 		}
-		time.Sleep(time.Duration(1) * time.Second)
 
 	}
 

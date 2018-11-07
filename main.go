@@ -82,8 +82,8 @@ func main() {
 
 	for _, AvClass := range c.AVClass {
 		switch AvClass {
-		case "aicheng_mosaiched":
-			aisex.Do("aicheng_mosaiched")
+		case "aicheng_asia_mosaiched":
+			aisex.Do("aicheng_asia_mosaiched")
 		case "aicheng_asia_non_mosaicked":
 			aisex.Do("aicheng_asia_non_mosaicked")
 		case "chaoliu_asia_mosaiched":

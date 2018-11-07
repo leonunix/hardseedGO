@@ -5,8 +5,12 @@ xp_addr : "http://h3.cnmbtgf.rocks/pw/"
 av_class:
   - xp_asia_mosaiched
   - xp_asia_non_mosaiched
+  - aicheng_asia_mosaiched
+  - aicheng_asia_non_mosaicked
+  - chaoliu_asia_mosaiched
+  - chaoliu_asia_non_mosaiched
 timeout: 60
-topic_range: 128
+topic_range: 256
 save_path: "download"
 hate_keywords:
 like_keywords:

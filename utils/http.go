@@ -308,6 +308,8 @@ func GetDownsxTorrent(httpClient *http.Client, url string, fileUrl string) error
 				downloadUrl = "http://www1.downsx.com" + downloadUrl
 			} else if strings.Contains(url, "club") {
 				downloadUrl = "http://www1.downsx.club" + downloadUrl
+			} else if strings.Contains(url, "xyz") {
+				downloadUrl = "http://www1.downsx.xyz" + downloadUrl
 			}
 
 			log.Printf("获取种子下载真是地址: %s", downloadUrl)
@@ -326,6 +328,8 @@ func GetDownsxTorrent(httpClient *http.Client, url string, fileUrl string) error
 				reqest.Header.Set("Host", "www1.downsx.com")
 			} else if strings.Contains(url, "club") {
 				reqest.Header.Set("Host", "www1.downsx.club")
+			} else if strings.Contains(url, "club") {
+				reqest.Header.Set("Host", "www1.downsx.xyz")
 			}
 
 			reqest.Header.Set("Referer", url)
