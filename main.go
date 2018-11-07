@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/hardseedGO/aisex"
+	"github.com/hardseedGO/chaoliu"
 	"gopkg.in/yaml.v2"
 )
 
@@ -59,12 +60,24 @@ func main() {
 	aisex.C.TopicRange = c.TopicRange
 	aisex.C.Proxy = c.Proxy
 
+	//init chaoliu struct
+	chaoliu.C.Url = c.CaoliuAddr
+	chaoliu.C.Timeout = c.Timeout
+	chaoliu.C.HateKeyWord = c.HateKeyWord
+	chaoliu.C.LikeKeyWord = c.LikeKeyWord
+	chaoliu.C.SavePath = c.SavePath
+	chaoliu.C.TopicRange = c.TopicRange
+	chaoliu.C.Proxy = c.Proxy
 	for _, AvClass := range c.AVClass {
 		switch AvClass {
 		case "aicheng_mosaiched":
 			aisex.Do("aicheng_mosaiched")
 		case "aicheng_asia_non_mosaicked":
 			aisex.Do("aicheng_asia_non_mosaicked")
+		case "chaoliu_asia_mosaiched":
+			chaoliu.Do("chaoliu_asia_mosaiched")
+		case "chaoliu_asia_non_mosaiched":
+			chaoliu.Do("chaoliu_asia_non_mosaiched")
 		default:
 			log.Println("no av class find")
 		}

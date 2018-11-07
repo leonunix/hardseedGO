@@ -1,4 +1,4 @@
-package aisex
+package chaoliu
 
 import (
 	"log"
@@ -33,12 +33,12 @@ func Do(avClass string) {
 	var topicList []utils.Topic
 	// 计算要请求多少页面
 	page, _ := strconv.Atoi(C.TopicRange)
-	pageCount := page / 28
+	pageCount := page / 60
 	if pageCount == 0 {
 		pageCount++
 	}
 
-	if (page % 28) != 0 {
+	if (page % 60) != 0 {
 		pageCount++
 	}
 	log.Printf("一共需要请求 %d 页", pageCount)
@@ -108,12 +108,12 @@ func Do(avClass string) {
 
 func getTopicsListUrl(avClass string) string {
 	switch avClass {
-	case "aicheng_mosaiched":
-		return C.Url + "thread.php?fid=4"
-	case "aicheng_asia_non_mosaicked":
-		return C.Url + "thread.php?fid=16"
+	case "chaoliu_asia_mosaiched":
+		return C.Url + "thread0806.php?fid=15"
+	case "chaoliu_asia_non_mosaicked":
+		return C.Url + "thread0806.php?fid=2"
 	default:
-		return C.Url + "thread.php?fid=4"
+		return C.Url + "thread0806.php?fid=15"
 	}
 }
 
@@ -123,9 +123,9 @@ func getTopic(body []byte) []utils.Topic {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	dom.Find(".tr3.t_one").Each(func(i int, s *goquery.Selection) {
-		title := s.Find("a[target=_blank]").Text()
-		url, _ := s.Find("a[target=_blank]").Attr("href")
+	dom.Find("a[target=_blank][id]").Each(func(i int, s *goquery.Selection) {
+		title := s.Text()
+		url, _ := s.Attr("href")
 		tmpTopic := utils.Topic{
 			Title: utils.TitleFilter(title),
 			Url:   url,
@@ -142,27 +142,38 @@ func getImageAndTorrent(body []byte, title string) error {
 	if err != nil {
 		return err
 	}
-	dom.Find(".tpc_content").Each(func(i int, s *goquery.Selection) {
-		//得到图片
-		id, _ := s.Attr("id")
-		if id == "read_tpc" {
+	isFirst := true
+
+	dom.Find(".tpc_content.do_not_catch").Each(func(i int, s *goquery.Selection) {
+
+		if isFirst {
+			isFirst = false
 			s.Find("img").Each(func(i1 int, s1 *goquery.Selection) {
-				imageUrl, _ := s1.Attr("src")
+				imageUrl, _ := s1.Attr("data-src")
+				if strings.HasSuffix(imageUrl, ".gif") {
+					return
+				}
 				log.Printf("正在下载图片: %s", imageUrl)
 				savePath := C.SavePath + "/" + title + "-" + strconv.Itoa(i1) + ".jpg"
 				utils.DownloadImage(httpclient, imageUrl, savePath)
 			})
 			//得到种子地址
-			torrent, _ := s.Find("a[target=_blank]").Attr("href")
+			var torrent string
+			s.Find("a[target=_blank][onmouseover][href]").Each(func(i int, s1 *goquery.Selection) {
+
+				tmpUrl := s1.Text()
+				if strings.Contains(tmpUrl, "rmdown.com") || strings.Contains(tmpUrl, "jandown") {
+					torrent = tmpUrl
+				}
+			})
 
 			log.Printf("获取种子地址： %s", torrent)
-			savePath := C.SavePath + "/" + title + ".torrent"
 
-			err = utils.GetJandownTorrent(httpclient, torrent, savePath)
+			savePath := C.SavePath + "/" + title + ".torrent"
+			err = utils.GetRmdownTorrent(httpclient, torrent, savePath)
 			if err != nil {
 				log.Print(err)
 			}
-
 		}
 
 	})

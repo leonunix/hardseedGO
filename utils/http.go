@@ -237,6 +237,59 @@ func GetJandownTorrent(httpClient *http.Client, url string, fileUrl string) erro
 	return nil
 }
 
+//rmdown.com
+func GetRmdownTorrent(httpClient *http.Client, url string, fileUrl string) error {
+	indexPage, err := Get(httpClient, url)
+	dom, err := goquery.NewDocumentFromReader(strings.NewReader(string(indexPage)))
+	if err != nil {
+		return err
+	}
+	reff, _ := dom.Find("INPUT[TYPE=hidden][NAME=reff]").Attr("value")
+	ref, _ := dom.Find("INPUT[TYPE=hidden][NAME=ref]").Attr("value")
+
+	log.Printf("rmdown获取ref %s 和reff %s", ref, reff)
+
+	torrentUrl := "http://rmdown.com/download.php?reff=" + reff + "&ref=" + ref
+	log.Print(torrentUrl)
+	reqest, err := http.NewRequest("GET", torrentUrl, nil)
+	if err != nil {
+		return err
+	}
+	reqest.Header.Set("Accept-Encoding", "gzip, deflate, sdch")
+	reqest.Header.Set("Accept-Language", "zh-CN,zh;q=0.8")
+	reqest.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36")
+	reqest.Header.Set("Accept", "text/javascript, text/html, application/xml, text/xml, */*")
+	reqest.Header.Set("Connection", "keep-alive")
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+	reqest.Header.Set("Cache-Control", "no-cache")
+
+	response, err := httpClient.Do(reqest)
+	defer response.Body.Close()
+	if err != nil {
+		return err
+	}
+
+	var reader io.ReadCloser
+	if response.Header.Get("Content-Encoding") == "gzip" {
+		reader, err = gzip.NewReader(response.Body)
+		if err != nil {
+			return err
+		}
+	} else {
+		reader = response.Body
+	}
+	file, err := os.Create(fileUrl)
+	if err != nil {
+		log.Print("iocrate error", err.Error())
+	}
+	// Use io.Copy to just dump the response body to the file. This supports huge files
+	_, err = io.Copy(file, reader)
+	if err != nil {
+		log.Print("iowrite error", err.Error())
+	}
+	file.Close()
+	return nil
+}
 func GbkToUtf8(s []byte) ([]byte, error) {
 	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
 	d, e := ioutil.ReadAll(reader)

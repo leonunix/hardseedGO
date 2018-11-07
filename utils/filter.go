@@ -39,3 +39,22 @@ func HateFilter(topicList []Topic, keywords []string) []Topic {
 	return filterdList
 
 }
+
+func TitleFilter(title string) string {
+
+	filter := sensitive.New()
+	filter.AddWord("\\")
+	filter.AddWord("/")
+	filter.AddWord(":")
+	filter.AddWord("*")
+	filter.AddWord("?")
+	filter.AddWord("\"")
+	filter.AddWord("<")
+	filter.AddWord(">")
+	filter.AddWord("|")
+	filter.AddWord(" ")
+	filter.AddWord("→")
+	ret := filter.Replace(title, 48)
+	return ret
+
+}

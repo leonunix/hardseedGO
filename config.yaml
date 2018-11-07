@@ -1,8 +1,8 @@
 ---
 aisex_addr: "http://www.aisex.com/bt/"
+chaoliu_addr: "https://www.t66y.com/"
 av_class:
-  - aicheng_mosaiched
-  - aicheng_asia_non_mosaicked
+  - chaoliu_asia_mosaiched
 timeout: 60
 topic_range: 128
 save_path: "download"
