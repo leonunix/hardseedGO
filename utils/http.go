@@ -66,7 +66,7 @@ func GetHttpClient(userProxy *ProxyS) *http.Client {
 func Get(httpClient *http.Client, url string) ([]byte, error) {
 	reqest, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Panic(err)
+		return []byte{1}, err
 	}
 	reqest.Header.Set("Accept-Encoding", "gzip, deflate, sdch")
 	reqest.Header.Set("Accept-Language", "zh-CN,zh;q=0.8")
@@ -77,11 +77,11 @@ func Get(httpClient *http.Client, url string) ([]byte, error) {
 	reqest.Header.Set("Cache-Control", "no-cache")
 
 	response, err := httpClient.Do(reqest)
-	defer response.Body.Close()
+
 	if err != nil {
 		return []byte{1}, err
 	}
-
+	defer response.Body.Close()
 	var reader io.ReadCloser
 	if response.Header.Get("Content-Encoding") == "gzip" {
 		reader, err = gzip.NewReader(response.Body)
@@ -302,15 +302,11 @@ func GetDownsxTorrent(httpClient *http.Client, url string, fileUrl string) error
 		tmpText := s.Text()
 		if tmpText == "下載檔案" {
 			downloadUrl, _ := s.Attr("href")
-			if strings.Contains(url, "rocks") {
-				downloadUrl = "http://www1.downsx.rocks" + downloadUrl
-			} else if strings.Contains(url, "com") {
-				downloadUrl = "http://www1.downsx.com" + downloadUrl
-			} else if strings.Contains(url, "club") {
-				downloadUrl = "http://www1.downsx.club" + downloadUrl
-			} else if strings.Contains(url, "xyz") {
-				downloadUrl = "http://www1.downsx.xyz" + downloadUrl
+			ur, err := u.Parse(url)
+			if err != nil {
+				log.Fatal(err)
 			}
+			downloadUrl = "http://" + ur.Host + downloadUrl
 
 			log.Printf("获取种子下载真是地址: %s", downloadUrl)
 			reqest, err := http.NewRequest("POST", downloadUrl, nil)
@@ -322,16 +318,8 @@ func GetDownsxTorrent(httpClient *http.Client, url string, fileUrl string) error
 			reqest.Header.Set("Connection", "keep-alive")
 			reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 			reqest.Header.Set("Cache-Control", "no-cache")
-			if strings.Contains(url, "rocks") {
-				reqest.Header.Set("Host", "www1.downsx.rocks")
-			} else if strings.Contains(url, "com") {
-				reqest.Header.Set("Host", "www1.downsx.com")
-			} else if strings.Contains(url, "club") {
-				reqest.Header.Set("Host", "www1.downsx.club")
-			} else if strings.Contains(url, "club") {
-				reqest.Header.Set("Host", "www1.downsx.xyz")
-			}
 
+			reqest.Header.Set("Host", ur.Host)
 			reqest.Header.Set("Referer", url)
 			reqest.Header.Set("Upgrade-Insecure-Requests", "1")
 			response, err := httpClient.Do(reqest)

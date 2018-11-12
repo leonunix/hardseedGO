@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/hardseedGO/utils"
+	"github.com/leonunix/hardseedGO/utils"
 )
 
 var (

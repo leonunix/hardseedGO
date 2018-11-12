@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/hardseedGO/aisex"
-	"github.com/hardseedGO/chaoliu"
-	"github.com/hardseedGO/xp"
+	"github.com/leonunix/hardseedGO/aisex"
+	"github.com/leonunix/hardseedGO/chaoliu"
+	"github.com/leonunix/hardseedGO/xp"
 	"gopkg.in/yaml.v2"
 )
 
